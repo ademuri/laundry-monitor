@@ -1,5 +1,5 @@
 #include "constants.h"
-#include "digicert.h" 
+#include "digicert.h"
 #include <WiFi.h>
 #include "twilio.hpp"
 
@@ -25,16 +25,11 @@ void setup() {
 
   Serial.println("Sending...");
   twilio = new Twilio(account_sid, auth_token, DigiCertGlobalRootCA_crt);
-  String message = "test message";
-  String response;
-  //bool success = twilio->send_message(to_number, from_number, message, response);
-  //Serial.println(response);
-  //Serial.println(success);
 }
 
 int32_t kCycleDelayMs = 10;
-//int32_t kChangeCountThreshold = 60 * 1000 / kCycleDelayMs; // One minute
-int32_t kChangeCountThreshold = 5 * 1000 / kCycleDelayMs; // 5 seconds
+int32_t kOnToOffThreshold = 3 * 60 * 1000 / kCycleDelayMs; // Three minutes
+int32_t kOffToOnThreshold = 10 * 1000 / kCycleDelayMs; // 10 seconds
 
 uint32_t average;
 bool laundryOn = false;
@@ -46,17 +41,22 @@ void loop() {
   if (laundryOn) {
     if (average == 0) {
       changeCount++;
-      if (changeCount > kChangeCountThreshold) {
+      if (changeCount > kOnToOffThreshold) {
         laundryOn = false;
         changeCount = 0;
         digitalWrite(kLedPin, false);
         // DING
+        String message = "Washer is done";
+        String response;
+        bool success = twilio->send_message(to_number, from_number, message, response);
+        Serial.println(response);
+        Serial.println(success);
       }
     }
   } else {
     if (average > 0) {
       changeCount++;
-      if (changeCount > kChangeCountThreshold) {
+      if (changeCount > kOffToOnThreshold) {
         laundryOn = true;
         changeCount = 0;
         digitalWrite(kLedPin, true);
