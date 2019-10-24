@@ -1,15 +1,26 @@
 static const uint8_t kCurrentPin = 13;
+static const uint8_t kLedPin = 2;
 
 void setup() {
-  // put your setup code here, to run once:
   Serial.begin(115200);
 
   pinMode(kCurrentPin, INPUT);
+  pinMode(kLedPin, OUTPUT);
 
+  digitalWrite(kLedPin, LOW);
 }
 
+uint32_t average;
+int printCount = 0;
+
 void loop() {
-  // put your main code here, to run repeatedly:
-  Serial.println(analogRead(kCurrentPin));
-  delay(500);
+  average = (average * 3 + analogRead(kCurrentPin)) / 4;
+  digitalWrite(kLedPin, average > 0);
+  delay(10);
+
+  printCount++;
+  if (printCount > 10) {
+    printCount = 0;
+    Serial.println(average);
+  }
 }
