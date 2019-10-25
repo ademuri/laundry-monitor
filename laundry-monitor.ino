@@ -52,6 +52,8 @@ void loop() {
         Serial.println(response);
         Serial.println(success);
       }
+    } else {
+      changeCount = 0;
     }
   } else {
     if (average > 0) {
@@ -61,6 +63,8 @@ void loop() {
         changeCount = 0;
         digitalWrite(kLedPin, true);
       }
+    } else {
+      changeCount = 0;
     }
   }
 
