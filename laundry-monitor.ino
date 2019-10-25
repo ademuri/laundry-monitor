@@ -28,7 +28,7 @@ void setup() {
 }
 
 int32_t kCycleDelayMs = 10;
-int32_t kOnToOffThreshold = 3 * 60 * 1000 / kCycleDelayMs; // Three minutes
+int32_t kOnToOffThreshold = 2 * 60 * 1000 / kCycleDelayMs; // Two minutes
 int32_t kOffToOnThreshold = 10 * 1000 / kCycleDelayMs; // 10 seconds
 
 uint32_t average;
@@ -49,11 +49,14 @@ void loop() {
         String message = "Washer is done";
         String response;
         bool success = twilio->send_message(to_number, from_number, message, response);
-        Serial.println(response);
-        Serial.println(success);
+        if (success) {
+          Serial.println("Sent message successfully");
+        } else {
+          Serial.println(response);
+        }
       }
-    } else {
-      changeCount = 0;
+    } else if (changeCount > 0) {
+      changeCount--;
     }
   } else {
     if (average > 0) {
@@ -63,8 +66,8 @@ void loop() {
         changeCount = 0;
         digitalWrite(kLedPin, true);
       }
-    } else {
-      changeCount = 0;
+    } else if (changeCount > 0) {
+      changeCount--;
     }
   }
 
