@@ -56,7 +56,7 @@ void loop() {
         }
       }
     } else if (changeCount > 0) {
-      changeCount--;
+      changeCount -= 10;
     }
   } else {
     if (average > 0) {
