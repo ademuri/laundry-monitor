@@ -1,5 +1,4 @@
 #include "constants.h"
-#include "digicert.h"
 #include <WiFi.h>
 #include "twilio.hpp"
 #include "median-filter.h"
@@ -36,7 +35,7 @@ void setup() {
   digitalWrite(kLedPin, LOW);
 
   Serial.println("Sending...");
-  twilio = new Twilio(account_sid, auth_token, DigiCertGlobalRootCA_crt);
+  twilio = new Twilio(account_sid, auth_token);
 }
 
 //int32_t kCycleDelayMs = 10;

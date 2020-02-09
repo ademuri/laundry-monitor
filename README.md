@@ -21,7 +21,8 @@ environment. It should work on any ESP32-based board. Note that ADC2 is
 unusable while WiFi is enabled, so you'll need to connect the sensor to ADC1.
 
 This uses the [smart input
-filter](https://github.com/ademuri/smart-input-filter) library.
+filter](https://github.com/ademuri/smart-input-filter) and [Twilio ESP32
+client](https://github.com/ademuri/twilio-esp32-client) libraries.
 
 ## Configuration
 
