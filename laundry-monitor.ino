@@ -11,7 +11,6 @@
 
 // Note: must use ADC1, ADC2 becomes unusable during Wifi usage
 static const uint8_t kWasherPin = 33;
-static const uint8_t kLedPin = 2;
 
 // Defined in constants.h
 extern std::vector<Person*> people;
@@ -34,17 +33,18 @@ void setup() {
 
   washer = Appliance::Create<kWasherPin>(150 * 1000, 10 * 1000);
 
-  pinMode(kLedPin, OUTPUT);
-  digitalWrite(kLedPin, LOW);
+  for (auto person : people) {
+    digitalWrite(person->led_pin, HIGH);
+  }
 
   WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
-  }
-  digitalWrite(kLedPin, HIGH);
+  while (WiFi.status() != WL_CONNECTED) {}
   delay(500);
-  digitalWrite(kLedPin, LOW);
 
-  Serial.println("Sending...");
+  for (auto person : people) {
+    digitalWrite(person->led_pin, LOW);
+  }
+
   twilio = new Twilio(account_sid, auth_token);
 }
 
@@ -55,18 +55,11 @@ void loop() {
     person->button->Run();
     if (person->button->Rose()) {
       person->notify = !person->notify;
-      Serial.print("Notify '");
-      Serial.print(person->phone_number);
-      Serial.print("': ");
-      Serial.println(person->notify);
+      digitalWrite(person->led_pin, person->notify);
     }
   }
 
-  if (washer->TurnedOn()) {
-    digitalWrite(kLedPin, true);
-  } else if (washer->TurnedOff()) {
-    digitalWrite(kLedPin, false);
-
+  if (washer->TurnedOff()) {
     for (auto person : people) {
       if (person->notify) {
         send_message(person->phone_number, "Washer is done");
