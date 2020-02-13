@@ -11,11 +11,13 @@
 
 // Note: must use ADC1, ADC2 becomes unusable during Wifi usage
 static const uint8_t kWasherPin = 33;
+static const uint8_t kDryerPin = 32;
 
 // Defined in constants.h
 extern std::vector<Person*> people;
 
 Appliance* washer;
+Appliance* dryer;
 Twilio *twilio;
 
 void send_message(String to_number, String message) {
@@ -32,6 +34,7 @@ void setup() {
   Serial.begin(115200);
 
   washer = Appliance::Create<kWasherPin>(150 * 1000, 10 * 1000);
+  dryer = Appliance::Create<kDryerPin>(30 * 1000, 10 * 1000);
 
   for (auto person : people) {
     digitalWrite(person->led_pin, HIGH);
@@ -50,6 +53,7 @@ void setup() {
 
 void loop() {
   washer->Run();
+  dryer->Run();
 
   for (auto person : people) {
     person->button->Run();
@@ -63,6 +67,13 @@ void loop() {
     for (auto person : people) {
       if (person->notify) {
         send_message(person->phone_number, "Washer is done");
+      }
+    }
+  }
+  if (dryer->TurnedOff()) {
+    for (auto person : people) {
+      if (person->notify) {
+        send_message(person->phone_number, "Dryer is done");
       }
     }
   }
