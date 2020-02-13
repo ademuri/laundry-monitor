@@ -32,3 +32,5 @@ void Appliance::Run() {
 bool Appliance::TurnedOn() { return (state_ == true && prev_state_ == false); }
 
 bool Appliance::TurnedOff() { return (state_ == false && prev_state_ == true); }
+
+bool Appliance::State() { return state_; }

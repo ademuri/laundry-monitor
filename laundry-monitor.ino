@@ -20,6 +20,10 @@ Appliance* washer;
 Appliance* dryer;
 Twilio *twilio;
 
+// Turn off all notifications if the appliances are both off for a while.
+uint32_t notify_off_at = 0xFFFFFFFF;
+static const uint32_t notify_off_delay = 60 * 60 * 1000; // One hour
+
 void send_message(String to_number, String message) {
   String response;
   bool success = twilio->send_message(to_number, from_number, message, response);
@@ -55,11 +59,19 @@ void loop() {
   washer->Run();
   dryer->Run();
 
+  if (millis() > notify_off_at) {
+    for (auto person : people) {
+      person->notify = false;
+      digitalWrite(person->led_pin, false);
+    }
+  }
+
   for (auto person : people) {
     person->button->Run();
     if (person->button->Rose()) {
       person->notify = !person->notify;
       digitalWrite(person->led_pin, person->notify);
+      notify_off_at = millis() + notify_off_delay;
     }
   }
 
@@ -69,12 +81,18 @@ void loop() {
         send_message(person->phone_number, "Washer is done");
       }
     }
+    if (!dryer->State()) {
+      notify_off_at = millis() + notify_off_delay;
+    }
   }
   if (dryer->TurnedOff()) {
     for (auto person : people) {
       if (person->notify) {
         send_message(person->phone_number, "Dryer is done");
       }
+    }
+    if (!washer->State()) {
+      notify_off_at = millis() + notify_off_delay;
     }
   }
 }

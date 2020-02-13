@@ -15,6 +15,7 @@ class Appliance {
   // Whether the appliance turned on or off in the last call to Run.
   bool TurnedOn();
   bool TurnedOff();
+  bool State();
 
  private:
   Appliance(MedianFilter<uint32_t, uint32_t, 5> *const easy_filter,
