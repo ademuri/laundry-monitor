@@ -13,6 +13,9 @@
 static const uint8_t kWasherPin = 33;
 static const uint8_t kDryerPin = 32;
 
+// Set this to true to just log the current sensor values to the terminal. Used for setting up the current sensors.
+static const bool calibrate = false;
+
 // Defined in constants.h
 extern std::vector<Person*> people;
 
@@ -56,6 +59,13 @@ void setup() {
 }
 
 void loop() {
+  if (calibrate) {
+    Serial.print(analogRead(kWasherPin));
+    Serial.print(" ");
+    Serial.println(analogRead(kDryerPin));
+    return;
+  }
+
   washer->Run();
   dryer->Run();
 
