@@ -6,8 +6,7 @@
 class Appliance {
  public:
   template <uint32_t pin>
-  static Appliance *Create(uint32_t on_to_off_threshold,
-                           uint32_t off_to_on_threshold);
+  static Appliance *Create(uint32_t on_to_off_threshold);
 
   // Read from sensors and do the logic. Call this periodically.
   void Run();
@@ -20,13 +19,12 @@ class Appliance {
  private:
   Appliance(MedianFilter<uint32_t, uint32_t, 5> *const easy_filter,
             MedianFilter<uint32_t, uint32_t, 201> *const hard_filter,
-            uint32_t on_to_off_threshold, uint32_t off_to_on_threshold);
+            uint32_t on_to_off_threshold);
 
   MedianFilter<uint32_t, uint32_t, 5> *const easy_filter_;
   MedianFilter<uint32_t, uint32_t, 201> *const hard_filter_;
 
   const uint32_t on_to_off_threshold_;
-  const uint32_t off_to_on_threshold_;
 
   uint32_t change_at_ = 0;
   bool state_ = false;
@@ -34,8 +32,7 @@ class Appliance {
 };
 
 template <uint32_t pin>
-Appliance *Appliance::Create(uint32_t on_to_off_threshold,
-                             uint32_t off_to_on_threshold) {
+Appliance *Appliance::Create(uint32_t on_to_off_threshold) {
   pinMode(pin, INPUT);
   auto easy_filter = new MedianFilter<uint32_t, uint32_t, 5>(
                            filter_functions::ForAnalogRead<pin>());
@@ -45,7 +42,7 @@ Appliance *Appliance::Create(uint32_t on_to_off_threshold,
                            filter_functions::ForAnalogRead<pin>());
   hard_filter->SetMinRunInterval(100);
 
-  return new Appliance(easy_filter, hard_filter, on_to_off_threshold, off_to_on_threshold);
+  return new Appliance(easy_filter, hard_filter, on_to_off_threshold);
 }
 
 #endif

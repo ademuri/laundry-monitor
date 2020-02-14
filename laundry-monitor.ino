@@ -40,8 +40,8 @@ void send_message(String to_number, String message) {
 void setup() {
   Serial.begin(115200);
 
-  washer = Appliance::Create<kWasherPin>(150 * 1000, 10 * 1000);
-  dryer = Appliance::Create<kDryerPin>(30 * 1000, 10 * 1000);
+  washer = Appliance::Create<kWasherPin>(150 * 1000);
+  dryer = Appliance::Create<kDryerPin>(30 * 1000);
 
   for (auto person : people) {
     digitalWrite(person->led_pin, HIGH);
