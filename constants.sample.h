@@ -12,6 +12,9 @@ String from_number = "";
 // People to notify when the appliances finish running.
 // Format: {"phone number", sensor_pin_number, led_pin_number}
 // Phone numbers start with '+<countrycode>'
+//
+// Note: check the pin table here when assigning pins, not all are safe to use!
+// https://randomnerdtutorials.com/esp32-pinout-reference-gpios/
 std::vector<Person*> people = {
   {"+13038675309", 25, 14},
 };
