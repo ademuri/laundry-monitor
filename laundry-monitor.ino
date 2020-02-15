@@ -63,6 +63,7 @@ void loop() {
     Serial.print(analogRead(kWasherPin));
     Serial.print(" ");
     Serial.println(analogRead(kDryerPin));
+    delay(5);
     return;
   }
 
@@ -105,4 +106,6 @@ void loop() {
       notify_off_at = millis() + notify_off_delay;
     }
   }
+
+  delay(1);
 }
