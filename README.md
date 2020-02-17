@@ -38,5 +38,11 @@ Enter the `ssid` and `password` for your wifi network.
 
 This sketch uses Twilio to send SMS. The `account_sid`, `auth_token`, and
 `from_number` are all available on the Twilio dashboard. You need to rent a
-phone number from Twilio to be able to send SMS (the `from_number`). The
-`to_number` is the phone number to send notifications to.
+phone number from Twilio to be able to send SMS (the `from_number`).
+
+### People
+
+This project can notify multiple people. Each person has a phone number and
+pins for input and output. The input pin is used to turn on and off
+notifications. The output pin drives an LED to display the notification status
+(on or off).
