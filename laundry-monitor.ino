@@ -70,13 +70,6 @@ void loop() {
   washer->Run();
   dryer->Run();
 
-  if (millis() > notify_off_at) {
-    for (auto person : people) {
-      person->notify = false;
-      digitalWrite(person->led_pin, false);
-    }
-  }
-
   for (auto person : people) {
     person->button->Run();
     if (person->button->Rose()) {
@@ -86,14 +79,15 @@ void loop() {
     }
   }
 
+  if (washer->State() || dryer->State()) {
+    notify_off_at = millis() + notify_off_delay;
+  }
+
   if (washer->TurnedOff()) {
     for (auto person : people) {
       if (person->notify) {
         send_message(person->phone_number, "Washer is done");
       }
-    }
-    if (!dryer->State()) {
-      notify_off_at = millis() + notify_off_delay;
     }
   }
   if (dryer->TurnedOff()) {
@@ -102,8 +96,12 @@ void loop() {
         send_message(person->phone_number, "Dryer is done");
       }
     }
-    if (!washer->State()) {
-      notify_off_at = millis() + notify_off_delay;
+  }
+
+  if (millis() > notify_off_at) {
+    for (auto person : people) {
+      person->notify = false;
+      digitalWrite(person->led_pin, false);
     }
   }
 
