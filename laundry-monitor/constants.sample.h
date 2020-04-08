@@ -1,6 +1,8 @@
 #ifndef __CONSTANTS__
 #define __CONSTANTS
 
+#include "person.h"
+
 const char* ssid = "";
 const char* password = "";
 const char* account_sid = "";
