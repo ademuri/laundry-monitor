@@ -1,4 +1,5 @@
 #include <ArduinoOTA.h>
+#include <ESPmDNS.h>
 #include <SPIFFS.h>
 #include <WiFi.h>
 #include <functional>
@@ -87,6 +88,19 @@ void setup() {
     });
 
   ArduinoOTA.begin();
+
+  // Set up mDNS responder:
+  // - first argument is the domain name, in this example
+  //   the fully-qualified domain name is "esp8266.local"
+  // - second argument is the IP address to advertise
+  //   we send our IP address on the WiFi network
+  if (MDNS.begin("laundry-monitor")) {
+    // Add service to MDNS-SD
+    MDNS.addService("http", "tcp", 80);
+    Serial.println("mDNS responder started");
+  } else {
+    Serial.println("Error setting up MDNS responder!");
+  }
 }
 
 void loop() {
