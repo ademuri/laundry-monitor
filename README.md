@@ -3,6 +3,13 @@
 This is an Arduino sketch that sends an SMS when an appliance has finished
 running. It uses an analog current sensor.
 
+## Dashboard
+
+The code creates a web dashboard. You can use mDNS to easily access this
+dashboard. From any browser except on Android, navigate to
+[laundry-monitor.local/](http://laundry-monitor.local/) to see the sensor
+values, appliance states, and uptime.
+
 ## Current sensor
 
 I use [this Modern Devices
@@ -12,7 +19,15 @@ the appliance. Traditional (split-core) current sensors must be attached to a
 single conductor, rather than the entire cord, or they won't work. The Modern
 Devices sensor sends an analog voltage between GND and VIN depending on the
 measured current. It seems to have relatively low noise (i.e. when the
-aplpliance is off, it returns 0).
+appliance is off, it returns 0).
+
+### Tuning
+
+The current sensors are very sensitive to position - you may need to fiddle
+around a bit to find the position that works. All you need is for the sensor to
+consistently be non-zero when the appliance is running. The sensor should
+mostly report zero when the appliance is off. There is filtering on the sensor,
+so small amounts of noise are OK.
 
 ## Platform
 
