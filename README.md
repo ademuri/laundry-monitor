@@ -61,3 +61,21 @@ This project can notify multiple people. Each person has a phone number and
 pins for input and output. The input pin is used to turn on and off
 notifications. The output pin drives an LED to display the notification status
 (on or off).
+
+## Programming
+
+The first time you load this sketch, you'll need to program as normal:
+
+```
+$ pio run -t upload
+```
+
+You may need to specify the port using `--upload-port`.
+
+After that, you can use ArduinoOTA to update the sketch over WiFi:
+
+```
+$ pio run -t upload --upload-port laundry-monitor.local
+```
+
+This can be a little flaky, so you may have to try a few times.
