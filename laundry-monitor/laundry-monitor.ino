@@ -3,6 +3,7 @@
 #include <SPIFFS.h>
 #include <WiFi.h>
 #include <functional>
+#include <periodic-runner.h>
 #include <vector>
 
 #include "appliance.h"
@@ -34,10 +35,11 @@ uint32_t notify_off_at = 0xFFFFFFFF;
 static const uint32_t notify_off_delay = 60 * 60 * 1000; // One hour
 
 static const uint32_t refresh_mdns_delay = 60 * 1000;
-uint32_t refresh_mdns_at = refresh_mdns_delay;
 
 // How long to disable WiFi sleep for when the dashboard is used.
 static const uint32_t kDashboardSleepDelay = 60 * 1000;
+
+PeriodicRunner runner;
 
 void send_message(String to_number, String message) {
   String response;
@@ -52,9 +54,7 @@ void send_message(String to_number, String message) {
 void setup() {
   Serial.begin(115200);
 
-  washer = Appliance::Create<kWasherPin>(150 * 1000);
-  dryer = Appliance::Create<kDryerPin>(30 * 1000);
-
+  // Turn on lights while connecting to WiFi to show we're alive
   for (auto person : people) {
     digitalWrite(person->led_pin, HIGH);
   }
@@ -112,6 +112,9 @@ void setup() {
     Serial.println("Error setting up MDNS responder!");
   }
 
+  washer = Appliance::Create<kWasherPin>(150 * 1000);
+  dryer = Appliance::Create<kDryerPin>(30 * 1000);
+
   server = new AsyncWebServer(80);
   dashboard = new Dashboard(server);
   dashboard->Add<uint32_t>("Uptime", millis, 5000);
@@ -120,17 +123,18 @@ void setup() {
   dashboard->Add<uint16_t>("Washer level", []() { return analogRead(kWasherPin); }, 2000);
   dashboard->Add<uint16_t>("Dryer level", []() { return analogRead(kDryerPin); }, 2000);
   server->begin();
+
+  runner.Add(refresh_mdns_delay, []() {
+    if (!MDNS.begin("laundry-monitor")) {
+      Serial.println("Error while refreshing MDNS");
+    }
+  });
+
 }
 
 void loop() {
   ArduinoOTA.handle();
-
-  if (millis() > refresh_mdns_at) {
-    if (!MDNS.begin("laundry-monitor")) {
-      Serial.println("Error while refreshing MDNS");
-    }
-    refresh_mdns_at = millis() + refresh_mdns_delay;
-  }
+  runner.Run();
 
   if (calibrate) {
     Serial.print(analogRead(kWasherPin));
@@ -183,6 +187,4 @@ void loop() {
   } else {
     WiFi.setSleep(false);
   }
-
-  delay(1);
 }

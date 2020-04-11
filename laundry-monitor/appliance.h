@@ -24,6 +24,9 @@ class Appliance {
   MedianFilter<uint32_t, uint32_t, 5> *const easy_filter_;
   MedianFilter<uint32_t, uint32_t, 201> *const hard_filter_;
 
+  // Don't regard the appliance as on for this long after power up, to avoid noise from filling up the hard filter.
+  static const uint32_t power_on_delay_ = 5 * 1000;
+
   const uint32_t on_to_off_threshold_;
 
   uint32_t change_at_ = 0;
