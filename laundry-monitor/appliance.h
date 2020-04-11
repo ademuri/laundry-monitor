@@ -24,7 +24,8 @@ class Appliance {
   MedianFilter<uint32_t, uint32_t, 5> *const easy_filter_;
   MedianFilter<uint32_t, uint32_t, 201> *const hard_filter_;
 
-  // Don't regard the appliance as on for this long after power up, to avoid noise from filling up the hard filter.
+  // Don't regard the appliance as on for this long after power up, to avoid
+  // noise from filling up the hard filter.
   static const uint32_t power_on_delay_ = 5 * 1000;
 
   const uint32_t on_to_off_threshold_;
@@ -38,11 +39,11 @@ template <uint32_t pin>
 Appliance *Appliance::Create(uint32_t on_to_off_threshold) {
   pinMode(pin, INPUT);
   auto easy_filter = new MedianFilter<uint32_t, uint32_t, 5>(
-                           filter_functions::ForAnalogRead<pin>());
+      filter_functions::ForAnalogRead<pin>());
   easy_filter->SetMinRunInterval(5);
 
   auto hard_filter = new MedianFilter<uint32_t, uint32_t, 201>(
-                           filter_functions::ForAnalogRead<pin>());
+      filter_functions::ForAnalogRead<pin>());
   hard_filter->SetMinRunInterval(100);
 
   return new Appliance(easy_filter, hard_filter, on_to_off_threshold);

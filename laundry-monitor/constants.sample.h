@@ -17,7 +17,7 @@ String from_number = "";
 // Note: check the pin table here when assigning pins, not all are safe to use!
 // https://randomnerdtutorials.com/esp32-pinout-reference-gpios/
 std::vector<Person*> people = {
-  new Person("+13038675309", 25, 14),
+    new Person("+13038675309", 25, 14),
 };
 
 #endif

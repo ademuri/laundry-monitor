@@ -2,8 +2,9 @@
 #include <ESPmDNS.h>
 #include <SPIFFS.h>
 #include <WiFi.h>
-#include <functional>
 #include <periodic-runner.h>
+
+#include <functional>
 #include <vector>
 
 #include "appliance.h"
@@ -18,21 +19,22 @@
 static const uint8_t kWasherPin = 33;
 static const uint8_t kDryerPin = 32;
 
-// Set this to true to just log the current sensor values to the terminal. Used for setting up the current sensors.
+// Set this to true to just log the current sensor values to the terminal. Used
+// for setting up the current sensors.
 static const bool calibrate = false;
 
 // Defined in constants.h
-extern std::vector<Person*> people;
+extern std::vector<Person *> people;
 
-Appliance* washer;
-Appliance* dryer;
+Appliance *washer;
+Appliance *dryer;
 Twilio *twilio;
 Dashboard *dashboard;
 AsyncWebServer *server;
 
 // Turn off all notifications if the appliances are both off for a while.
 uint32_t notify_off_at = 0xFFFFFFFF;
-static const uint32_t notify_off_delay = 60 * 60 * 1000; // One hour
+static const uint32_t notify_off_delay = 60 * 60 * 1000;  // One hour
 
 static const uint32_t refresh_mdns_delay = 60 * 1000;
 
@@ -43,7 +45,8 @@ PeriodicRunner runner;
 
 void send_message(String to_number, String message) {
   String response;
-  bool success = twilio->send_message(to_number, from_number, message, response);
+  bool success =
+      twilio->send_message(to_number, from_number, message, response);
   if (success) {
     Serial.println("Sent message successfully");
   } else {
@@ -60,7 +63,8 @@ void setup() {
   }
 
   WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {}
+  while (WiFi.status() != WL_CONNECTED) {
+  }
   delay(500);
 
   for (auto person : people) {
@@ -70,32 +74,35 @@ void setup() {
   twilio = new Twilio(account_sid, auth_token);
 
   ArduinoOTA
-    .onStart([]() {
-      WiFi.setSleep(false);
-      String type;
-      if (ArduinoOTA.getCommand() == U_FLASH) {
-        type = "sketch";
-      } else { // U_SPIFFS
-        type = "filesystem";
-      }
+      .onStart([]() {
+        WiFi.setSleep(false);
+        String type;
+        if (ArduinoOTA.getCommand() == U_FLASH) {
+          type = "sketch";
+        } else {  // U_SPIFFS
+          type = "filesystem";
+        }
 
-      Serial.println("Start updating " + type);
-      SPIFFS.end();
-    })
-    .onEnd([]() {
-      Serial.println("\nEnd");
-    })
-    .onProgress([](unsigned int progress, unsigned int total) {
-      Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
-    })
-    .onError([](ota_error_t error) {
-      Serial.printf("Error[%u]: ", error);
-      if (error == OTA_AUTH_ERROR) Serial.println("Auth Failed");
-      else if (error == OTA_BEGIN_ERROR) Serial.println("Begin Failed");
-      else if (error == OTA_CONNECT_ERROR) Serial.println("Connect Failed");
-      else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
-      else if (error == OTA_END_ERROR) Serial.println("End Failed");
-    });
+        Serial.println("Start updating " + type);
+        SPIFFS.end();
+      })
+      .onEnd([]() { Serial.println("\nEnd"); })
+      .onProgress([](unsigned int progress, unsigned int total) {
+        Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
+      })
+      .onError([](ota_error_t error) {
+        Serial.printf("Error[%u]: ", error);
+        if (error == OTA_AUTH_ERROR)
+          Serial.println("Auth Failed");
+        else if (error == OTA_BEGIN_ERROR)
+          Serial.println("Begin Failed");
+        else if (error == OTA_CONNECT_ERROR)
+          Serial.println("Connect Failed");
+        else if (error == OTA_RECEIVE_ERROR)
+          Serial.println("Receive Failed");
+        else if (error == OTA_END_ERROR)
+          Serial.println("End Failed");
+      });
 
   ArduinoOTA.begin();
 
@@ -118,10 +125,14 @@ void setup() {
   server = new AsyncWebServer(80);
   dashboard = new Dashboard(server);
   dashboard->Add<uint32_t>("Uptime", millis, 5000);
-  dashboard->Add<bool>("Washer on", []() { return washer->State(); }, 2000);
-  dashboard->Add<bool>("Dryer on", []() { return dryer->State(); }, 2000);
-  dashboard->Add<uint16_t>("Washer level", []() { return analogRead(kWasherPin); }, 2000);
-  dashboard->Add<uint16_t>("Dryer level", []() { return analogRead(kDryerPin); }, 2000);
+  dashboard->Add<bool>(
+      "Washer on", []() { return washer->State(); }, 2000);
+  dashboard->Add<bool>(
+      "Dryer on", []() { return dryer->State(); }, 2000);
+  dashboard->Add<uint16_t>(
+      "Washer level", []() { return analogRead(kWasherPin); }, 2000);
+  dashboard->Add<uint16_t>(
+      "Dryer level", []() { return analogRead(kDryerPin); }, 2000);
   server->begin();
 
   runner.Add(refresh_mdns_delay, []() {
@@ -129,7 +140,6 @@ void setup() {
       Serial.println("Error while refreshing MDNS");
     }
   });
-
 }
 
 void loop() {

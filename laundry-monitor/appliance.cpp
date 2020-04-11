@@ -5,8 +5,7 @@ Appliance::Appliance(MedianFilter<uint32_t, uint32_t, 5> *const easy_filter,
                      uint32_t on_to_off_threshold)
     : easy_filter_(easy_filter),
       hard_filter_(hard_filter),
-      on_to_off_threshold_(on_to_off_threshold) {
-}
+      on_to_off_threshold_(on_to_off_threshold) {}
 
 void Appliance::Run() {
   prev_state_ = state_;
