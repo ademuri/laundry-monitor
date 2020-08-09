@@ -8,6 +8,7 @@ const char* password = "";
 const char* account_sid = "";
 const char* auth_token = "";
 
+// Phone number to send from, from Twilio. Starts with '+<countrycode>'.
 String from_number = "";
 
 // People to notify when the appliances finish running.
