@@ -161,7 +161,14 @@ void loop() {
     person->button->Run();
     if (person->button->Rose()) {
       person->notify = !person->notify;
-      digitalWrite(person->led_pin, person->notify);
+      // Briefly flash all lights to show that press registered
+      for (auto otherPerson : people) {
+        digitalWrite(otherPerson->led_pin, HIGH);
+      }
+      delay(50);
+      for (auto otherPerson : people) {
+        digitalWrite(otherPerson->led_pin, otherPerson->notify);
+      }
       notify_off_at = millis() + notify_off_delay;
     }
   }
